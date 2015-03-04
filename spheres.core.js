@@ -53,111 +53,180 @@ L.game.main = function() {
     var testScene = new L.objects.Scene("testScene");
     testScene.bgFill = "#000000";
     var rippleLayer = testScene.addLayer("ripples");
+    rippleLayer.isClickable = false;
     var buttonLayer = testScene.addLayer("buttons");
     var glowLayer = testScene.addLayer("glows");
     glowLayer.isClickable = false;
     var buttonArray = [];
     var hypotneuse = 200;
-    var letters = ["c", "d", "e", "f", "g", "a", "b"];
+    var letters = ["c", "d", "e", "f", "g", "a", "b", "h"];
     L.pipe.colors = ["#fe00d4", "#ff0000", "#ff8000", "#ffff00", "#26ff00", "#00a7ff", "#8b00ff"];
     var modes = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
+
     for (var i = 0; i < 7; i++)
     {
-	var letter = letters[i];
-	var angle = -Math.PI * 2 / 7 * i + Math.PI / 2;
-	var sin = Math.sin(angle);
-	var cos = Math.cos(angle);
-	var xCoord = cos * hypotneuse;
-	var yCoord = -sin * hypotneuse;
-	var button = new L.objects.Sprite(letter + "NoteButton");
-	var buttonGlow = new L.objects.Sprite(letter + "Glow");
-	buttonGlow.centerHandle();
-	buttonGlow.alpha = 0;
-	button.glow = buttonGlow;
-	buttonGlow.parent = button;
-	button.centerHandle();
-	button.x = buttonGlow.x = xCoord + L.system.width / 2;
-	button.y = buttonGlow.y = yCoord + L.system.height / 2;
-
-
-	button.ripple = new L.pipe.Ripple(i);
-	button.sounds = {};
-	button.addRipple = function()
-	{
-	    this.ripple.rippleArray.push(1);
-	};
-	button.currentMode = "Aeolian";
-	for (var k = 0; k < 7; k++)
-	{
-	    var currentMode = modes[k];
-	    button.sounds[currentMode] = new L.objects.soundFX(currentMode + "-" + letter);
-	}
-	button.play = function(glow)
-	{
-	    this.sounds[this.currentMode].play(1);
-	    if (glow)
-	    {
-		this.glow.alpha = 1;
-		this.addRipple();
-	    }
-	};
-	if (letter === "c")
-	{
-	    button.sounds2 = {};
-	    button.playHigh = function(glow)
-	    {
-		this.sounds2[this.currentMode].play(1);
-		if (glow)
-		{
-		    this.glow.alpha = 1;
-		    this.addRipple();
-		}
-	    };
-	    for (var k = 0; k < 7; k++)
-	    {
-		var currentMode = modes[k];
-		button.sounds2[currentMode] = new L.objects.soundFX(currentMode + "-h");
-	    }
-	    button.onClick = function(x)
-	    {
-		if (x >= this.x)
-		{
-		    this.play(true);
-		} else {
-		    this.playHigh(true);
-		}
-	    };
-	} else {
-	    button.onClick = function()
-	    {
-		this.play(true);
-	    };
-	}
-	button.update = function()
-	{
-	    this.ripple.x = this.x;
-	    this.ripple.y = this.y;
-	};
-	buttonGlow.update = function(dt)
-	{
-	    this.x = this.parent.x;
-	    this.y = this.parent.y;
-	    if (this.alpha > 0)
-	    {
-		this.alpha -= 0.8 * dt;
-		if (this.alpha < 0)
-		{
-		    this.alpha = 0;
-		}
-	    }
-	};
-	buttonLayer.addObject(button);
-	glowLayer.addObject(buttonGlow);
-	rippleLayer.addObject(button.ripple);
-	buttonArray.push(button);
+	var currentButton = new L.pipe.MusicButton(i, letters, hypotneuse, modes);
+	buttonLayer.addObject(currentButton);
+	glowLayer.addObject(currentButton.glow);
+	rippleLayer.addObject(currentButton.ripple);
+	buttonArray.push(currentButton);
     }
     var life = new L.objects.Sprite("lifeNote");
     testScene.layers.background.addObject(life);
+
+    var playNote = {
+	c: function() {
+	    buttonArray[0].play(false);
+	},
+	d: function() {
+	    buttonArray[1].play(false);
+	},
+	e: function() {
+	    buttonArray[2].play(false);
+	},
+	f: function() {
+	    buttonArray[3].play(false);
+	},
+	g: function() {
+	    buttonArray[4].play(false);
+	},
+	a: function() {
+	    buttonArray[5].play(false);
+	},
+	b: function() {
+	    buttonArray[6].play(false);
+	},
+	h: function() {
+	    buttonArray[0].playHigh(false);
+	}
+    };
+    var playNoteWithGlow = {
+	c: function() {
+	    buttonArray[0].play(true);
+	},
+	d: function() {
+	    buttonArray[1].play(true);
+	},
+	e: function() {
+	    buttonArray[2].play(true);
+	},
+	f: function() {
+	    buttonArray[3].play(true);
+	},
+	g: function() {
+	    buttonArray[4].play(true);
+	},
+	a: function() {
+	    buttonArray[5].play(true);
+	},
+	b: function() {
+	    buttonArray[6].play(true);
+	},
+	h: function() {
+	    buttonArray[0].playHigh(true);
+	}
+    };
+
+
+    var minuet = [
+	['c', 0],
+	['e', 0],
+	['g', 1],
+	['c', 0.5],
+	['d', 0.5],
+	['d', 0],
+	['e', 0.5],
+	['f', 0.5],
+	['e', 0],
+	['g', 1],
+	['c', 1],
+	['c', 1],
+	['f', 0],
+	['a', 1],
+	['f', 0.5],
+	['g', 0.5],
+	['a', 0.5],
+	['b', 0.5],
+	['e', 0],
+	['h', 1],
+	['c', 1],
+	['c', 1],
+	['d', 0],
+	['f', 1],
+	['g', 0.5],
+	['f', 0.5],
+	['e', 0.5],
+	['d', 0.5],
+	['c', 0],
+	['e', 1],
+	['f', 0.5],
+	['e', 0.5],
+	['e', 0],
+	['d', 0.5],
+	['c', 0.5],
+	['f', 0],
+	['d', 1],
+	['g', 0],
+	['e', 0.5],
+	['d', 0.5],
+	['g', 0],
+	['c', 0.5],
+	['g', 0],
+	['d', 0.5],
+	['h', 0],
+	['c', 1]
+
+    ];
+    L.pipe.songGenerator =
+    {
+	songArray: [],
+	noteLength: 0.5,
+	makeSong: function(length) {
+	   // this.songArray = minuet;
+	   this.songArray = [];
+	   for (var i = 0; i < length; i++)
+	   {
+	       if (i < 2)
+	       {
+		   this.songArray.push([letters.getRandomElement(),1]);
+	       } else
+	       {
+		   var potentialNote = letters.getRandomElement();
+		   var minusOne = this.songArray[i-1][0];
+		   var minusTwo = this.songArray[i-2][0];
+		   while (potentialNote === minusOne && minusOne === minusTwo)
+		   {
+		       potentialNote = letters.getRandomElement();
+		   }
+		   this.songArray.push([potentialNote,1]);
+	       }
+	   }
+	},
+	moveToTimeline: function(timeline)
+	{
+	    var songLength = this.songArray.length;
+	    var noteOn = 0;
+	    for (var i = 0; i < songLength; i++)
+	    {
+
+		timeline.addEvent(noteOn, playNoteWithGlow[this.songArray[i][0]]);
+		noteOn = noteOn + this.noteLength * this.songArray[i][1];
+	    }
+	    return timeline;
+	}
+    };
+
+    L.pipe.songGenerator.makeSong(320);
+    var songPlayer = L.pipe.songGenerator.moveToTimeline(new L.objects.Timeline());
+    testScene.layers.background.addObject(songPlayer);
+    songPlayer.play();
+
+
+
+
+
+
+
 
 
     var levelState = {};
@@ -169,6 +238,8 @@ L.game.main = function() {
 	    button.currentMode = mode;
 	});
     };
+
+
 
 
     var keyControl = new L.input.Keymap();
