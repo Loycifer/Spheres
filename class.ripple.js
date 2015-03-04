@@ -16,13 +16,15 @@ L.pipe.Ripple.prototype.draw = function(layer)
     for (var i = 0, length = this.rippleArray.length; i < length; i++)
     {
 	var Pi2 = this.Pi2;
-	var currentRipple = this.rippleArray[i];
+	var currentRipple = this.rippleArray[i][0];
+	var x = this.rippleArray[i][1];
+	var y = this.rippleArray[i][2];
 	layer.strokeStyle = this.color;
 	var radius = 49 + (1 - currentRipple) * this.distance;
 	layer.globalAlpha = currentRipple < 0.5 ? currentRipple * 2 : 1;
 	layer.lineWidth = this.width * currentRipple;
 	layer.beginPath();
-	layer.arc(this.x, this.y, radius, 0, Pi2);
+	layer.arc(x, y, radius, 0, Pi2);
 	layer.stroke();
 
 	if (currentRipple >= 0.5)
@@ -31,7 +33,7 @@ L.pipe.Ripple.prototype.draw = function(layer)
 	    layer.strokeStyle = "white";
 	    layer.lineWidth /= 2;
 	    layer.beginPath();
-	    layer.arc(this.x, this.y, radius, 0, Pi2);
+	    layer.arc(x, y, radius, 0, Pi2);
 	    layer.stroke();
 	}
     }
@@ -41,9 +43,9 @@ L.pipe.Ripple.prototype.update = function(dt)
 {
     for (var i = 0, length = this.rippleArray.length; i < length; i++)
     {
-	this.rippleArray[i] -= dt / this.time;
+	this.rippleArray[i][0] -= dt / this.time;
     }
-    while (this.rippleArray[0] <= 0)
+    while (this.rippleArray[0] && this.rippleArray[0][0] <= 0)
     {
 	this.rippleArray.shift();
     }
