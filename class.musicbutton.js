@@ -4,21 +4,22 @@ var L;
 L.pipe.MusicButton = function(buttonNumber, letters, hypotneuse,modes)
     {
 	var letter = this.letter = letters[buttonNumber];
-	var angle = -Math.PI * 2 / 7 * buttonNumber + Math.PI / 2;
-	var sin = Math.sin(angle);
-	var cos = Math.cos(angle);
-	var xCoord = cos * hypotneuse;
-	var yCoord = -sin * hypotneuse;
 	L.objects.Sprite.call(this, letter + "NoteButton");
+	this.hypotneuse = hypotneuse;
+	this.posAngle = -Math.PI * 2 / 7 * buttonNumber + Math.PI / 2;
+	this.sin = Math.sin(this.posAngle);
+	this.cos = Math.cos(this.posAngle);
+
+
+
 	this.centerHandle();
 	this.noteRatio = Math.pow(2,(buttonNumber/7));
 	this.wobbleSpeed = 0.3;
 	this.clock = Math.random();
 	this.glow = new L.pipe.MusicButtonGlow(letter, this);
-
+this.setHypotneuse(hypotneuse);
 //this.offset.x=50;
-	this.x = this.glow.x = xCoord + L.system.width / 2;
-	this.y = this.glow.y = yCoord + L.system.height / 2;
+
 	this.ripple = new L.pipe.Ripple(buttonNumber);
 	this.sounds = {};
 	for (var k = 0; k < 7; k++)
@@ -113,3 +114,13 @@ L.pipe.MusicButton = function(buttonNumber, letters, hypotneuse,modes)
 	}
     };
     })();
+
+     L.pipe.MusicButton.prototype.setHypotneuse = function(distance)
+     {
+	this.hypotneuse = distance;
+
+	var xCoord = this.cos * this.hypotneuse;
+	var yCoord = -this.sin * this.hypotneuse;
+	this.x = this.glow.x = xCoord + L.system.width / 2;
+	this.y = this.glow.y = yCoord + L.system.height / 2;
+     };
