@@ -50,7 +50,9 @@ L.game.main = function() {
 //    mainScene.layers["background"].addObject(someExistingObject);
 //    mainScene.setScene();
 
-    var gameBoard = new L.objects.Scene("testScene");
+    var titleScreen = new L.objects.Scene("titleScreen");
+    titleScreen.bgFill = "#000000";
+    var gameBoard = new L.objects.Scene("gameBoard");
     gameBoard.bgFill = "#000000";
     var rippleLayer = gameBoard.addLayer("ripples");
     rippleLayer.isClickable = false;
@@ -62,6 +64,26 @@ L.game.main = function() {
     var letters = ["c", "d", "e", "f", "g", "a", "b", "h"];
     L.pipe.colors = ["#fe00d4", "#ff0000", "#ff8000", "#ffff00", "#26ff00", "#00a7ff", "#8b00ff"];
     var modes = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
+
+    titleScreen.addLayerObject(rippleLayer);
+    titleScreen.addLayerObject(buttonLayer);
+    titleScreen.addLayerObject(glowLayer);
+    var menuLayer = titleScreen.addLayer("menuLayer");
+    menuLayer.isClickable = false;
+
+    var titleString = new L.objects.Textbox("Spheres");
+    titleString.x = L.system.width/2;
+     titleString.y = L.system.height/4;
+     titleString.textFill = "white";
+     titleString.textStrokeStyle = "black";
+     titleString.testLineWidth = "6";
+    titleString.alignment = 'center';
+    titleString.fontSize = 60;
+    titleString.autoSize();
+
+    menuLayer.addObject(titleString);
+
+
 
     for (var i = 0; i < 7; i++)
     {
@@ -170,7 +192,7 @@ L.game.main = function() {
 	}
     };
 
-    L.pipe.songGenerator.makeSong(320);
+    L.pipe.songGenerator.makeSong(256);
     var songPlayer = L.pipe.songGenerator.moveToTimeline(new L.objects.Timeline());
     gameBoard.layers.background.addObject(songPlayer);
     songPlayer.play();
@@ -228,7 +250,7 @@ L.game.main = function() {
     }
 
 
-   
+
     var keyControl = new L.input.Keymap();
 
     for (var i = 0; i < 7; i++)
@@ -256,6 +278,6 @@ L.game.main = function() {
     }
 
 
-    gameBoard.keymap = keyControl;
-    gameBoard.setScene();
+    titleScreen.keymap = keyControl;
+    titleScreen.setScene();
 };
