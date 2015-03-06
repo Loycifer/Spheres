@@ -132,7 +132,7 @@ L.game.main = function() {
     {
 	songArray: [],
 	noteLength: 0.5,
-	getNote : function(index)
+	getNote: function(index)
 	{
 	    return songArray[index];
 	},
@@ -175,6 +175,34 @@ L.game.main = function() {
     gameBoard.layers.background.addObject(songPlayer);
     songPlayer.play();
 
+    var playerState = function()
+    {
+	this.name = "Pal";
+	for (var modeNumber = 0; modeNumber < 7; modeNumber++)
+	{
+
+	    var currentMode = modes[modeNumber];
+	    this[currentMode] = [];
+	    for (var levelNumber = 0; levelNumber < 7; levelNumber++)
+	    {
+		this[currentMode][levelNumber] = 0;
+	    }
+	}
+
+    };
+
+    playerState.prototype.updateScore = function()
+    {
+	var mode = levelState.mode;
+	var levelNumber = levelState.levelNumber;
+	var newScore = levelState.score;
+	if (newScore > this[mode][levelNumber])
+	{
+	    this[mode][levelNumber] = newScore;
+	}
+	localStorage.setItem('player', JSON.stringify(this));
+    };
+
     var levelState = {};
     levelState.mode = "Ionian";
     levelState.setMode = function(mode)
@@ -184,8 +212,23 @@ L.game.main = function() {
 	    button.currentMode = mode;
 	});
     };
+    levelState.score = 10;
+    levelState.levelNumber = 0;
+
+    var playerProfile = new playerState();
+
+    if (localStorage.getItem('player') !== undefined)
+    {
+	var JSONprofile = JSON.parse(localStorage.getItem('player'));
+
+	for (var i = 0; i < 7; i++)
+	{
+	    playerProfile[modes[i]] = JSONprofile[modes[i]];
+	}
+    }
 
 
+   
     var keyControl = new L.input.Keymap();
 
     for (var i = 0; i < 7; i++)
