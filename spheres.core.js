@@ -69,19 +69,79 @@ L.game.main = function() {
     titleScreen.addLayerObject(buttonLayer);
     titleScreen.addLayerObject(glowLayer);
     var menuLayer = titleScreen.addLayer("menuLayer");
-    menuLayer.isClickable = false;
+
 
     var titleString = new L.objects.Textbox("Spheres");
-    titleString.x = L.system.width/2;
-     titleString.y = L.system.height/4;
-     titleString.textFill = "white";
-     titleString.textStrokeStyle = "black";
-     titleString.testLineWidth = "6";
+    titleString.x = L.system.width / 2;
+    titleString.y = L.system.height / 5;
+    titleString.textFill = "white";
+    titleString.textStrokeStyle = "black";
+    titleString.textLineWidth = 8;
     titleString.alignment = 'center';
     titleString.fontSize = 60;
     titleString.autoSize();
+      titleString.isClickable = false;
 
+    L.pipe.menuString = function(text)
+    {
+	L.objects.Textbox.call(this, text);
+	this.x = L.system.width / 2;
+	this.textFill = "grey";
+	this.textStrokeStyle = "black";
+	this.textLineWidth = 8;
+	this.alignment = 'center';
+	this.fontSize = 50;
+	this.maxScale = 1.2;
+	this.centerY();
+	this.autoSize();
+	this.autoSize();
+
+    };
+    L.pipe.menuString.prototype = new L.objects.Textbox;
+    L.pipe.menuString.constructor = L.pipe.menuString;
+
+    L.pipe.menuString.prototype.update = function(dt)
+    {
+
+	if (Math.jordanCurve(L.mouse.x, L.mouse.y, this.getVertices()))
+	{
+	    var targetScale = this.maxScale;
+	    if (this.scale < targetScale)
+	    {
+		this.textFill = "white";
+		this.scale += 2 * dt;
+		this.autoSize();
+	    }
+	    if (this.scale > targetScale)
+	    {
+		this.scale = targetScale;
+	    }
+	}
+	else
+	{
+	    if (this.scale >1)
+	    {
+		this.textFill = "grey";
+		this.scale -= 4*dt;
+		this.autoSize();
+	    }
+	    if (this.scale <1)
+	    {
+		this.scale = 1;
+	    }
+	}
+
+    };
+
+    var playString = new L.pipe.menuString('play');
+    playString.y = L.system.height / 2;
+    var goToGame = function()
+    {
+	gameBoard.setScene();
+    };
+    playString.onClick = goToGame;
     menuLayer.addObject(titleString);
+    menuLayer.addObject(playString);
 
 
 
