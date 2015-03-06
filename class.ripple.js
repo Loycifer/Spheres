@@ -20,7 +20,7 @@ L.pipe.Ripple.prototype.draw = function(layer)
 	var x = this.rippleArray[i][1];
 	var y = this.rippleArray[i][2];
 	layer.strokeStyle = this.color;
-	var radius = 49 + (1 - currentRipple) * this.distance;
+	var radius = this.rippleArray[i][3] + (1 - currentRipple) * this.distance;
 	layer.globalAlpha = currentRipple < 0.5 ? currentRipple * 2 : 1;
 	layer.lineWidth = this.width * currentRipple;
 	layer.beginPath();

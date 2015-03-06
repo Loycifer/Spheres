@@ -11,7 +11,9 @@ L.pipe.MusicButton = function(buttonNumber, letters, hypotneuse,modes)
 	var yCoord = -sin * hypotneuse;
 	L.objects.Sprite.call(this, letter + "NoteButton");
 	this.centerHandle();
-	this.clock = 0;
+	this.noteRatio = Math.pow(2,(buttonNumber/7));
+	this.wobbleSpeed = 0.3;
+	this.clock = Math.random();
 	this.glow = new L.pipe.MusicButtonGlow(letter, this);
 
 //this.offset.x=50;
@@ -58,7 +60,7 @@ L.pipe.MusicButton = function(buttonNumber, letters, hypotneuse,modes)
 
     L.pipe.MusicButton.prototype.addRipple = function(x,y)
     {
-	this.ripple.rippleArray.push([1,x,y]);
+	this.ripple.rippleArray.push([1,x,y,49*this.scale.x]);
     };
     L.pipe.MusicButton.prototype.play = function(glow)
     {
@@ -84,11 +86,30 @@ L.pipe.MusicButton = function(buttonNumber, letters, hypotneuse,modes)
     };
     L.pipe.MusicButton.prototype.update = function(dt)
     {
-	var pi2 = Math.PI*2;
 	this.clock += dt;
-	this.offset.x = Math.sin(pi2*this.clock/4)*10;
-	this.offset.y = Math.cos(pi2*this.clock/4)*10;
+	var freq = Math.PI*2*this.noteRatio*this.clock * this.wobbleSpeed;
+	this.offset.x = Math.sin(freq)*5;
+	this.offset.y = Math.cos(0.8*freq)*5;
 	this.glow.x = this.getX();
 	this.glow.y = this.getY();
+	if (Math.jordanCurve(L.mouse.x, L.mouse.y, this.getVertices()) && this.isClickedPrecise(L.mouse.x,L.mouse.y))
+	{
+	    if (this.scale.x < 1.1)
+	    {
+		this.setScale(this.scale.x+(dt));
+	    }
+	    (this.scale.x > 1.1)?this.setScale(1.1):0;
+
+
+	}
+	else
+	{
+	    if (this.scale.x > 1)
+	    {
+		this.setScale(this.scale.x-(dt));
+	    }
+	    (this.scale.x < 1)?this.setScale(1):0;
+
+	}
     };
     })();

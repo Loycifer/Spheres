@@ -13,7 +13,7 @@
 
     L.pipe.MusicButtonGlow.prototype.update = function(dt)
     {
-	this.setScale((1-this.alpha)/8+1);
+	this.setScale(((1-this.alpha)/8+1)*this.parent.scale.x);
 	if (this.alpha > 0)
 	{
 
