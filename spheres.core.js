@@ -50,15 +50,15 @@ L.game.main = function() {
 //    mainScene.layers["background"].addObject(someExistingObject);
 //    mainScene.setScene();
 
-    var testScene = new L.objects.Scene("testScene");
-    testScene.bgFill = "#000000";
-    var rippleLayer = testScene.addLayer("ripples");
+    var gameBoard = new L.objects.Scene("testScene");
+    gameBoard.bgFill = "#000000";
+    var rippleLayer = gameBoard.addLayer("ripples");
     rippleLayer.isClickable = false;
-    var buttonLayer = testScene.addLayer("buttons");
-    var glowLayer = testScene.addLayer("glows");
+    var buttonLayer = gameBoard.addLayer("buttons");
+    var glowLayer = gameBoard.addLayer("glows");
     glowLayer.isClickable = false;
     var buttonArray = [];
-    var hypotneuse = 200;
+    var hypotneuse = 210;
     var letters = ["c", "d", "e", "f", "g", "a", "b", "h"];
     L.pipe.colors = ["#fe00d4", "#ff0000", "#ff8000", "#ffff00", "#26ff00", "#00a7ff", "#8b00ff"];
     var modes = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
@@ -71,8 +71,8 @@ L.game.main = function() {
 	rippleLayer.addObject(currentButton.ripple);
 	buttonArray.push(currentButton);
     }
-    var life = new L.objects.Sprite("lifeNote");
-    testScene.layers.background.addObject(life);
+    //var life = new L.objects.Sprite("lifeNote");
+    //testScene.layers.background.addObject(life);
 
     var playNote = {
 	c: function() {
@@ -128,79 +128,33 @@ L.game.main = function() {
     };
 
 
-    var minuet = [
-	['c', 0],
-	['e', 0],
-	['g', 1],
-	['c', 0.5],
-	['d', 0.5],
-	['d', 0],
-	['e', 0.5],
-	['f', 0.5],
-	['e', 0],
-	['g', 1],
-	['c', 1],
-	['c', 1],
-	['f', 0],
-	['a', 1],
-	['f', 0.5],
-	['g', 0.5],
-	['a', 0.5],
-	['b', 0.5],
-	['e', 0],
-	['h', 1],
-	['c', 1],
-	['c', 1],
-	['d', 0],
-	['f', 1],
-	['g', 0.5],
-	['f', 0.5],
-	['e', 0.5],
-	['d', 0.5],
-	['c', 0],
-	['e', 1],
-	['f', 0.5],
-	['e', 0.5],
-	['e', 0],
-	['d', 0.5],
-	['c', 0.5],
-	['f', 0],
-	['d', 1],
-	['g', 0],
-	['e', 0.5],
-	['d', 0.5],
-	['g', 0],
-	['c', 0.5],
-	['g', 0],
-	['d', 0.5],
-	['h', 0],
-	['c', 1]
-
-    ];
     L.pipe.songGenerator =
     {
 	songArray: [],
 	noteLength: 0.5,
+	getNote : function(index)
+	{
+	    return songArray[index];
+	},
 	makeSong: function(length) {
-	   // this.songArray = minuet;
-	   this.songArray = [];
-	   for (var i = 0; i < length; i++)
-	   {
-	       if (i < 2)
-	       {
-		   this.songArray.push([letters.getRandomElement(),1]);
-	       } else
-	       {
-		   var potentialNote = letters.getRandomElement();
-		   var minusOne = this.songArray[i-1][0];
-		   var minusTwo = this.songArray[i-2][0];
-		   while (potentialNote === minusOne && minusOne === minusTwo)
-		   {
-		       potentialNote = letters.getRandomElement();
-		   }
-		   this.songArray.push([potentialNote,1]);
-	       }
-	   }
+	    this.songArray = [];
+	    for (var i = 0; i < length; i++)
+	    {
+		if (i < 2)
+		{
+		    this.songArray.push([letters.getRandomElement(), 1]);
+		} else
+		{
+		    var potentialNote = letters.getRandomElement();
+		    var minusOne = this.songArray[i - 1][0];
+		    var minusTwo = this.songArray[i - 2][0];
+		    while (minusOne === minusTwo && potentialNote === minusOne)
+		    {
+			potentialNote = letters.getRandomElement();
+		    }
+		    this.songArray.push([potentialNote, 1]);
+		}
+	    }
 	},
 	moveToTimeline: function(timeline)
 	{
@@ -218,16 +172,8 @@ L.game.main = function() {
 
     L.pipe.songGenerator.makeSong(320);
     var songPlayer = L.pipe.songGenerator.moveToTimeline(new L.objects.Timeline());
-    testScene.layers.background.addObject(songPlayer);
+    gameBoard.layers.background.addObject(songPlayer);
     songPlayer.play();
-
-
-
-
-
-
-
-
 
     var levelState = {};
     levelState.mode = "Ionian";
@@ -240,46 +186,33 @@ L.game.main = function() {
     };
 
 
-
-
     var keyControl = new L.input.Keymap();
-    var getClickFunc = function(x)
-    {
-	var func = function() {
-	    buttonArray[x].play(true);
-	};
-	return func;
-    };
+
     for (var i = 0; i < 7; i++)
     {
-	keyControl.bindKey((i + 1).toString(), "keydown", getClickFunc(i)
-	);
+	keyControl.bindKey((i + 1).toString(), "keydown",
+	(function(x) {
+	    return function() {
+		buttonArray[x].play(true);
+	    };
+	})(i));
     }
+
     keyControl.bindKey("8", "keydown", function() {
 	buttonArray["0"].playHigh(true);
     });
-    keyControl.bindKey("c", "keydown", function() {
-	levelState.setMode("Ionian");
-    });
-    keyControl.bindKey("d", "keydown", function() {
-	levelState.setMode("Dorian");
-    });
-    keyControl.bindKey("e", "keydown", function() {
-	levelState.setMode("Phrygian");
-    });
-    keyControl.bindKey("f", "keydown", function() {
-	levelState.setMode("Lydian");
-    });
-    keyControl.bindKey("g", "keydown", function() {
-	levelState.setMode("Mixolydian");
-    });
-    keyControl.bindKey("a", "keydown", function() {
-	levelState.setMode("Aeolian");
-    });
-    keyControl.bindKey("b", "keydown", function() {
-	levelState.setMode("Locrian");
-    });
 
-    testScene.keymap = keyControl;
-    testScene.setScene();
+    for (var i = 0; i < 7; i++)
+    {
+	keyControl.bindKey(letters[i], "keydown",
+	(function(x) {
+	    return function() {
+		levelState.setMode(modes[x]);
+	    };
+	})(i));
+    }
+
+
+    gameBoard.keymap = keyControl;
+    gameBoard.setScene();
 };
