@@ -38,6 +38,7 @@ L.game.resources = function() {
 	    L.load.audio(soundName + letter, musicalMode + "-" + letter);
 	}
     }
+    L.load.audio("ionianSweep", "ionianSweep");
     load("note.png", "lifeNote");
 };
 L.game.main = function() {
@@ -299,7 +300,7 @@ L.game.main = function() {
 
     var playerProfile = new playerState();
 
-    if (localStorage.getItem('player') !== undefined)
+    if (localStorage.getItem('player'))
     {
 	var JSONprofile = JSON.parse(localStorage.getItem('player'));
 
@@ -310,7 +311,8 @@ L.game.main = function() {
     }
 
 
-
+var ionianSweep = new L.objects.Music("ionianSweep");
+ionianSweep.play(.1);
     var keyControl = new L.input.Keymap();
 
     for (var i = 0; i < 7; i++)
