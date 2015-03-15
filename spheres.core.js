@@ -4,11 +4,11 @@ L.game.settings = function() {
 
 
 //This is where to adjust engine settings
-    L.system.width = 900;
-    L.system.height = 600;
-//L.system.canvasLocation = document.getElementById("YOURDIV");
-    L.system.fullscreen = true;
-    L.system.orientation = "landscape";
+    L.system.setResolution(900,600);
+    L.system.setCanvasLocation(document.body);
+    L.system.setFullscreen(true);
+    L.system.setOrientation("landscape");
+    L.system.setAutoPause(true);
     L.system.resourcePath = "games/spheres/resources/";
 };
 L.game.resources = function() {
