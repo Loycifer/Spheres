@@ -1,5 +1,4 @@
-var L; //Do not remove this line or overwrite global variable L
-
+/* global L */
 
 L.game.settings = function() {
 
@@ -60,9 +59,9 @@ L.game.main = function() {
     var buttonLayer = gameBoard.addLayer("buttons");
     var glowLayer = gameBoard.addLayer("glows");
     glowLayer.isClickable = false;
-    var buttonArray = [];
+    var buttonArray = L.pipe.buttonArray = [];
     var hypotneuse = 210;
-    var letters = ["c", "d", "e", "f", "g", "a", "b", "h"];
+    var letters = L.pipe.letters = ["c", "d", "e", "f", "g", "a", "b", "h"];
     L.pipe.colors = ["#fe00d4", "#ff0000", "#ff8000", "#ffff00", "#26ff00", "#00a7ff", "#8b00ff"];
     var modes = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
 
@@ -81,7 +80,7 @@ L.game.main = function() {
     titleString.alignment = 'center';
     titleString.fontSize = 60;
     titleString.autoSize();
-      titleString.isClickable = false;
+    titleString.isClickable = false;
 
     L.pipe.menuString = function(text)
     {
@@ -120,13 +119,13 @@ L.game.main = function() {
 	}
 	else
 	{
-	    if (this.scale >1)
+	    if (this.scale > 1)
 	    {
 		this.textFill = "grey";
-		this.scale -= 4*dt;
+		this.scale -= 4 * dt;
 		this.autoSize();
 	    }
-	    if (this.scale <1)
+	    if (this.scale < 1)
 	    {
 		this.scale = 1;
 	    }
@@ -157,106 +156,20 @@ L.game.main = function() {
     //var life = new L.objects.Sprite("lifeNote");
     //testScene.layers.background.addObject(life);
 
-    var playNote = {
-	c: function() {
-	    buttonArray[0].play(false);
-	},
-	d: function() {
-	    buttonArray[1].play(false);
-	},
-	e: function() {
-	    buttonArray[2].play(false);
-	},
-	f: function() {
-	    buttonArray[3].play(false);
-	},
-	g: function() {
-	    buttonArray[4].play(false);
-	},
-	a: function() {
-	    buttonArray[5].play(false);
-	},
-	b: function() {
-	    buttonArray[6].play(false);
-	},
-	h: function() {
-	    buttonArray[0].playHigh(false);
-	}
-    };
-    var playNoteWithGlow = {
-	c: function() {
-	    buttonArray[0].play(true);
-	},
-	d: function() {
-	    buttonArray[1].play(true);
-	},
-	e: function() {
-	    buttonArray[2].play(true);
-	},
-	f: function() {
-	    buttonArray[3].play(true);
-	},
-	g: function() {
-	    buttonArray[4].play(true);
-	},
-	a: function() {
-	    buttonArray[5].play(true);
-	},
-	b: function() {
-	    buttonArray[6].play(true);
-	},
-	h: function() {
-	    buttonArray[0].playHigh(true);
-	}
-    };
 
 
-    L.pipe.songGenerator =
-    {
-	songArray: [],
-	noteLength: 0.5,
-	getNote: function(index)
-	{
-	    return songArray[index];
-	},
-	makeSong: function(length) {
-	    this.songArray = [];
-	    for (var i = 0; i < length; i++)
-	    {
-		if (i < 2)
-		{
-		    this.songArray.push([letters.getRandomElement(), 1]);
-		} else
-		{
-		    var potentialNote = letters.getRandomElement();
-		    var minusOne = this.songArray[i - 1][0];
-		    var minusTwo = this.songArray[i - 2][0];
-		    while (minusOne === minusTwo && potentialNote === minusOne)
-		    {
-			potentialNote = letters.getRandomElement();
-		    }
-		    this.songArray.push([potentialNote, 1]);
-		}
-	    }
-	},
-	moveToTimeline: function(timeline)
-	{
-	    var songLength = this.songArray.length;
-	    var noteOn = 0;
-	    for (var i = 0; i < songLength; i++)
-	    {
 
-		timeline.addEvent(noteOn, playNoteWithGlow[this.songArray[i][0]]);
-		noteOn = noteOn + this.noteLength * this.songArray[i][1];
-	    }
-	    return timeline;
-	}
-    };
 
     L.pipe.songGenerator.makeSong(256);
     var songPlayer = L.pipe.songGenerator.moveToTimeline(new L.objects.Timeline());
     gameBoard.layers.background.addObject(songPlayer);
     songPlayer.play();
+
+    L.pipe.songGenerator.makeSongFromLetters(["c", "d", "e", "f", "g", "a", "b", "h"]);
+    var introSongPLayer = L.pipe.songGenerator.moveToTimeline(new L.objects.Timeline());
+    titleScreen.layers.background.addObject(introSongPLayer);
+    introSongPLayer.play();
+
 
     var playerState = function()
     {
@@ -286,8 +199,9 @@ L.game.main = function() {
 	localStorage.setItem('player', JSON.stringify(this));
     };
 
-    var levelState = {};
+    var levelState = L.pipe.levelState = {};
     levelState.mode = "Ionian";
+    levelState.difficulty = 0;
     levelState.setMode = function(mode)
     {
 	this.mode = mode;
@@ -311,8 +225,8 @@ L.game.main = function() {
     }
 
 
-var ionianSweep = new L.objects.Music("ionianSweep");
-ionianSweep.play(.1);
+    var ionianSweep = new L.objects.Music("ionianSweep");
+    ionianSweep.play(.1);
     var keyControl = new L.input.Keymap();
 
     for (var i = 0; i < 7; i++)

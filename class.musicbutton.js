@@ -72,6 +72,15 @@ this.setHypotneuse(hypotneuse);
 	   this.addRipple(this.getX(),this.getY());
 	}
     };
+     L.pipe.MusicButton.prototype.playComp = function(glow)
+      {
+	this.sounds[this.currentMode].play(1);
+	if (L.pipe.levelState.difficulty < 1)
+	{
+	    this.glow.alpha = 1;
+	   this.addRipple(this.getX(),this.getY());
+	}
+    };
     L.pipe.MusicButton.prototype.playHigh = function(glow)
     {
 	if (this.letter === 'c')
@@ -83,7 +92,19 @@ this.setHypotneuse(hypotneuse);
 		this.addRipple(this.getX(),this.getY());
 	    }
 	}
+    };
 
+    L.pipe.MusicButton.prototype.playHighComp = function(glow)
+    {
+	if (this.letter === 'c')
+	{
+	    this.sounds2[this.currentMode].play(1);
+	    if (L.pipe.levelState.difficulty < 1)
+	    {
+		this.glow.alpha = 1;
+		this.addRipple(this.getX(),this.getY());
+	    }
+	}
     };
     L.pipe.MusicButton.prototype.update = function(dt)
     {
